@@ -1,0 +1,169 @@
+Cards.png
+	size: 2048, 2048
+	repeat: none
+Clubs
+	index: 1
+	bounds: 2, 2, 330, 490
+Clubs
+	index: 2
+	bounds: 334, 2, 330, 490
+Clubs
+	index: 3
+	bounds: 666, 2, 330, 490
+Clubs
+	index: 4
+	bounds: 998, 2, 330, 490
+Clubs
+	index: 5
+	bounds: 1330, 2, 330, 490
+Clubs
+	index: 6
+	bounds: 1662, 2, 330, 490
+Clubs
+	index: 7
+	bounds: 2, 494, 330, 490
+Clubs
+	index: 8
+	bounds: 334, 494, 330, 490
+Clubs
+	index: 9
+	bounds: 666, 494, 330, 490
+Clubs
+	index: 10
+	bounds: 998, 494, 330, 490
+Clubs
+	index: 11
+	bounds: 1330, 494, 330, 490
+Clubs
+	index: 12
+	bounds: 1662, 494, 330, 490
+Clubs
+	index: 13
+	bounds: 2, 986, 330, 490
+Diamonds
+	index: 1
+	bounds: 334, 986, 330, 490
+Diamonds
+	index: 2
+	bounds: 666, 986, 330, 490
+Diamonds
+	index: 3
+	bounds: 998, 986, 330, 490
+Diamonds
+	index: 4
+	bounds: 1330, 986, 330, 490
+Diamonds
+	index: 5
+	bounds: 1662, 986, 330, 490
+Diamonds
+	index: 6
+	bounds: 2, 1478, 330, 490
+Diamonds
+	index: 7
+	bounds: 334, 1478, 330, 490
+Diamonds
+	index: 8
+	bounds: 666, 1478, 330, 490
+Diamonds
+	index: 9
+	bounds: 998, 1478, 330, 490
+Diamonds
+	index: 10
+	bounds: 1330, 1478, 330, 490
+Diamonds
+	index: 11
+	bounds: 1662, 1478, 330, 490
+
+Cards2.png
+	size: 2048, 2048
+	repeat: none
+Diamonds
+	index: 12
+	bounds: 2, 2, 330, 490
+Diamonds
+	index: 13
+	bounds: 334, 2, 330, 490
+Hearts
+	index: 1
+	bounds: 666, 2, 330, 490
+Hearts
+	index: 2
+	bounds: 998, 2, 330, 490
+Hearts
+	index: 3
+	bounds: 1330, 2, 330, 490
+Hearts
+	index: 4
+	bounds: 1662, 2, 330, 490
+Hearts
+	index: 5
+	bounds: 2, 494, 330, 490
+Hearts
+	index: 6
+	bounds: 334, 494, 330, 490
+Hearts
+	index: 7
+	bounds: 666, 494, 330, 490
+Hearts
+	index: 8
+	bounds: 998, 494, 330, 490
+Hearts
+	index: 9
+	bounds: 1330, 494, 330, 490
+Hearts
+	index: 10
+	bounds: 1662, 494, 330, 490
+Hearts
+	index: 11
+	bounds: 2, 986, 330, 490
+Hearts
+	index: 12
+	bounds: 334, 986, 330, 490
+Hearts
+	index: 13
+	bounds: 666, 986, 330, 490
+Spades
+	index: 1
+	bounds: 998, 986, 330, 490
+Spades
+	index: 2
+	bounds: 1330, 986, 330, 490
+Spades
+	index: 3
+	bounds: 1662, 986, 330, 490
+Spades
+	index: 4
+	bounds: 2, 1478, 330, 490
+Spades
+	index: 5
+	bounds: 334, 1478, 330, 490
+Spades
+	index: 6
+	bounds: 666, 1478, 330, 490
+Spades
+	index: 7
+	bounds: 998, 1478, 330, 490
+Spades
+	index: 8
+	bounds: 1330, 1478, 330, 490
+Spades
+	index: 9
+	bounds: 1662, 1478, 330, 490
+
+Cards3.png
+	size: 2048, 512
+	repeat: none
+Spades
+	index: 10
+	bounds: 2, 2, 330, 490
+Spades
+	index: 11
+	bounds: 334, 2, 330, 490
+Spades
+	index: 12
+	bounds: 666, 2, 330, 490
+Spades
+	index: 13
+	bounds: 998, 2, 330, 490
+cardBack
+	bounds: 1330, 2, 330, 490
