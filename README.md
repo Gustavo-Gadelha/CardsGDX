@@ -37,4 +37,4 @@ Desenvolver um jogo de cartas para combinação de pares.
 
 ### Visão do projeto
 
-[Imgur](https://i.imgur.com/HMB5I4g.png)
+![Imgur](https://i.imgur.com/HMB5I4g.png)
