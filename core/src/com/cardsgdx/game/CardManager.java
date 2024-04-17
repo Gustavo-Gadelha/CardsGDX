@@ -3,71 +3,82 @@ package com.cardsgdx.game;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.utils.ObjectSet;
-import com.badlogic.gdx.utils.ObjectSet.ObjectSetIterator;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Array.ArrayIterator;
 
 public class CardManager {
-    private final ObjectSet<Card> referenceCards;
-    private ObjectSet<Card> playingCards;
+    private final Array<Card> playingCards;
+    private final int rows;
+    private final int cols;
+    private Card previousCard;
+    private Card currentCard;
 
-    public CardManager(TextureAtlas atlas) {
-        // TODO: look into optimizing card creation with atlas.createSprites().
-        this.referenceCards = new ObjectSet<>();
-        String[] regions = {"Clubs", "Diamonds", "Hearts", "Spades"};
+    public CardManager(TextureAtlas atlas, int screenWidth, int screenHeight) {
+        Array<Sprite> frontSprites = new Array<>();
         Sprite backSprite = atlas.createSprite("cardBack");
 
-        for (String region : regions) {
-            for (int i = 1; i < 14; i++) {
-                Sprite cardFront = atlas.createSprite(region, i);
-                Sprite cardBack = new Sprite(backSprite);
+        String[] regions = {"Clubs", "Diamonds", "Hearts", "Spades"};
+        for (String region : regions) frontSprites.addAll(atlas.createSprites(region));
+        frontSprites.shuffle();
 
-                Card card = new Card(cardFront, cardBack);
-                this.referenceCards.add(card);
-            }
+        this.rows = MathUtils.floor(screenWidth / Card.WIDTH);
+        this.cols = MathUtils.floor(screenHeight / Card.HEIGHT);
+        this.playingCards = new Array<>(rows * cols);
+
+        int total = (rows * cols) / 2;
+        for (int i = 0; i < total; i++) {
+            Card card = new Card(frontSprites.pop(), new Sprite(backSprite));
+            this.playingCards.add(card, card.createMatch());
         }
+
+        this.playingCards.shuffle();
+        this.setCards();
     }
 
-    public void setCardsPosition(int screenWidth, int screenHeight) {
-        // TODO: change referenceCards to playingCards once logic is implemented.
-        ObjectSetIterator<Card> cards = new ObjectSetIterator<>(this.referenceCards);
-        float posX = 0;
-        float posY = 0;
-
-        // Sets cards side by side with no padding, starts from the bottom left.
-        for (Card card : cards) {
-            card.setPosition(posX, posY);
-
-            // Advances to the next card position and check if all the sprite will be on screen.
-            posX += Card.WIDTH;
-            if (posX + Card.WIDTH > screenWidth) {
-                posX = 0;
-                posY += Card.HEIGHT;
-
-                // Checks if the card Sprite will go above the screen
-                if (posY + Card.HEIGHT > screenHeight) return;
+    public void setCards() {
+        // Since playingCards size is rows * cols, there's no need to check if (iter.hasNext());
+        ArrayIterator<Card> cards = this.playingCards.iterator();
+        for (int i = 0; i < this.rows; i++) {
+            for (int j = 0; j < this.cols; j++) {
+                Card card = cards.next();
+                card.setPosition(i * Card.WIDTH, j * Card.HEIGHT);
             }
         }
-    }
-
-    public void drawCards(SpriteBatch batch) {
-        // TODO: change referenceCards to playingCards once logic is implemented.
-        this.referenceCards.forEach(card -> card.draw(batch));
     }
 
     public void processMouseInput(float mouseX, float mouseY) {
-        // TODO: change referenceCards to playingCards once logic is implemented.
-        // TODO: abstract a input Processing into another class
-        // checks overlap for each card.
-        this.referenceCards.forEach(card -> {
-            if (card.overlaps(mouseX, mouseY) && !card.isMatched) card.turn();
-        });
+        this.currentCard = this.getOverlapingCard(mouseX, mouseY);
+        // Guard clause, only allows (not null) && (not Matched) && (not equal to previousCard) to pass through
+        if (this.currentCard == null || this.currentCard.isMatched || this.previousCard == this.currentCard) return;
+
+        this.currentCard.turn();
+        if (this.previousCard == null) {
+            this.previousCard = this.currentCard;
+            return;
+        }
+
+        if (Card.match(this.previousCard, this.currentCard)) {
+            this.previousCard.isMatched = true;
+            this.currentCard.isMatched = true;
+        } else {
+            this.previousCard.turn();
+            this.currentCard.turn();
+        }
+
+        this.previousCard = null;
     }
 
-    public ObjectSet<Card> getReferenceCards() {
-        return this.referenceCards;
+    public Card getOverlapingCard(float mouseX, float mouseY) {
+        // Goes through every card and returns the first one to overlap
+        for (Card card : this.playingCards) {
+            if (card.overlaps(mouseX, mouseY)) return card;
+        }
+
+        return null;
     }
 
-    public ObjectSet<Card> getPlayingCards() {
-        return this.playingCards;
+    public void drawAllCards(SpriteBatch batch) {
+        this.playingCards.forEach(card -> card.draw(batch));
     }
 }

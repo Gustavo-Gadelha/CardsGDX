@@ -12,20 +12,23 @@ public class GameScreen implements Screen {
     private CardManager cardManager;
     private OrthographicCamera camera;
     private ExtendViewport viewport;
+
+    // declared once and reassigned as needed to save performance on the garbage collector
     private static final Vector3 touchPoint = new Vector3();
 
     public GameScreen(CardGame game) {
         this.game = game;
-        this.cardManager = new CardManager(game.atlas);
 
         this.camera = new OrthographicCamera();
         this.camera.setToOrtho(false);
         this.viewport = new ExtendViewport(1280, 800, camera);
-        this.cardManager.setCardsPosition(1280, 800);
+
+        this.cardManager = new CardManager(game.atlas, 1280, 800);
     }
 
     @Override
     public void show() {
+
     }
 
     @Override
@@ -36,7 +39,6 @@ public class GameScreen implements Screen {
         this.game.batch.setProjectionMatrix(camera.combined);
 
         if (Gdx.input.justTouched()) {
-            // TODO: abstract all of this somewhere else!
             float mouseX = Gdx.input.getX();
             float mouseY = Gdx.input.getY();
             Vector3 mousePos = camera.unproject(touchPoint.set(mouseX, mouseY, 0));
@@ -44,7 +46,7 @@ public class GameScreen implements Screen {
         }
 
         this.game.batch.begin();
-        this.cardManager.drawCards(this.game.batch);
+        this.cardManager.drawAllCards(this.game.batch);
         this.game.batch.end();
     }
 

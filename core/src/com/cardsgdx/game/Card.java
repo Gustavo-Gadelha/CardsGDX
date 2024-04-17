@@ -20,8 +20,15 @@ public class Card {
         this.isTurned = false;
         this.isMatched = false;
 
-        // ~135x190 (135x189.44)
+        // ~128x190 (128x189.44)
         this.setSize(WIDTH, HEIGHT);
+    }
+
+    public Card createMatch() {
+        Card match = new Card(new Sprite(this.front), new Sprite(this.back));
+        match.setMatch(this);
+        this.setMatch(match);
+        return match;
     }
 
     public void setSize(float width, float height) {
@@ -50,35 +57,15 @@ public class Card {
         }
     }
 
-    public Card createMatch(Card card) {
-        Sprite cardFront = new Sprite(card.front);
-        Sprite cardBack = new Sprite(card.back);
-        Card match = new Card(cardFront, cardBack);
-        match.setMatch(card);
-        card.setMatch(match);
-
-        return match;
+    public void setMatch(Card card) {
+        this.match = card;
     }
 
-    public void setMatch(Card match) {
-        this.match = match;
-    }
-
-    public boolean match(Card card) {
-        // Tries to match a card and return if the card is matched
-        if (this.match == card) this.isMatched = true;
-        return this.isMatched;
+    public static boolean match(Card card1, Card card2) {
+        return card1.match == card2 && card2.match == card1;
     }
 
     public void turn() {
         this.isTurned = !this.isTurned;
-    }
-
-    public boolean isTurned() {
-        return this.isTurned;
-    }
-
-    public boolean isMatched() {
-        return this.isMatched;
     }
 }
