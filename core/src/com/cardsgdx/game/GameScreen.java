@@ -7,21 +7,23 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 public class GameScreen implements Screen {
-    // declared once and reassigned as needed to save performance on the garbage collector
-    private static final Vector2 touchPoint = new Vector2();
-
     private final CardGame game;
     private final CardManager cardManager;
     private final ExtendViewport viewport;
+    private final Vector2 touchPoint;
 
     public GameScreen(CardGame game) {
         this.game = game;
 
         // Minimum size to garante all Cards are on the screen at all time
-        float minWidth = CardManager.COLS * Card.WIDTH;
-        float minHeight = CardManager.ROWS * Card.HEIGHT;
-        this.viewport = new ExtendViewport(minWidth, minHeight);
+        float minWidth = CardManager.COLS * (Card.WIDTH + CardManager.PADDING) - CardManager.PADDING;
+        float minHeight = CardManager.ROWS * (Card.HEIGHT + CardManager.PADDING) - CardManager.PADDING;
+        this.viewport = new ExtendViewport(minWidth, minHeight); // 1298x766
         this.cardManager = new CardManager(game.atlas);
+        Gdx.graphics.setWindowedMode((int) minWidth, (int) minHeight);
+
+        // declared once and reassigned as needed to save performance on the garbage collector
+        this.touchPoint = new Vector2();
     }
 
     @Override
@@ -37,8 +39,8 @@ public class GameScreen implements Screen {
         this.game.batch.setProjectionMatrix(this.viewport.getCamera().combined);
 
         if (Gdx.input.justTouched()) {
-            GameScreen.touchPoint.set(Gdx.input.getX(), Gdx.input.getY());
-            Vector2 mousePos = this.viewport.unproject(GameScreen.touchPoint);
+            this.touchPoint.set(Gdx.input.getX(), Gdx.input.getY());
+            Vector2 mousePos = this.viewport.unproject(this.touchPoint);
             this.cardManager.processMouseInput(mousePos.x, mousePos.y);
         }
 

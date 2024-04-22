@@ -12,6 +12,7 @@ import java.util.Iterator;
 public class CardManager {
     public static final int ROWS = 4;
     public static final int COLS = 10;
+    public static final float PADDING = 2f;
     public static final float DELAY = 0.25f;
 
     private final Array<Card> playingCards;
@@ -44,8 +45,9 @@ public class CardManager {
         this.turnCards = new Task() {
             @Override
             public void run() {
-                if (CardManager.this.previousCard != null) CardManager.this.previousCard.turn();
-                if (CardManager.this.currentCard != null) CardManager.this.currentCard.turn();
+                CardManager.this.playingCards.forEach(card -> {
+                    if (card.isTurned && !card.isMatched) card.turn();
+                });
                 CardManager.this.previousCard = null;
             }
         };
@@ -57,18 +59,18 @@ public class CardManager {
             for (int j = 0; j < CardManager.COLS; j++) {
                 if (!cards.hasNext()) return;
                 Card card = cards.next();
-                card.setPosition(j * Card.WIDTH, i * Card.HEIGHT);
+                card.setPosition(j * (Card.WIDTH + CardManager.PADDING), i * (Card.HEIGHT + CardManager.PADDING));
             }
         }
     }
 
     public void processMouseInput(float mouseX, float mouseY) {
-        // skips processing if there's a schedule task
-        // means you can't select another card while 2 cards are turned up
+        // Skips processing if there's a schedule task
+        // This means you can't select another card while 2 cards are turned up
         if (!this.timer.isEmpty()) return;
 
-        this.currentCard = this.getOverlapingCard(mouseX, mouseY);
-        // Guard clause, only allows (not null) && (not Matched) && (not equal to previousCard) to pass through
+        // Get the first card at the mouse coordinates and filters it before moving on
+        this.currentCard = this.getCardAt(mouseX, mouseY);
         if (this.currentCard == null || this.currentCard.isTurned || this.currentCard.isMatched) return;
 
         this.currentCard.turn();
@@ -86,10 +88,10 @@ public class CardManager {
         }
     }
 
-    public Card getOverlapingCard(float mouseX, float mouseY) {
+    public Card getCardAt(float mouseX, float mouseY) {
         // Goes through every card and returns the first one to overlap
         for (Card card : this.playingCards) {
-            if (card.overlaps(mouseX, mouseY)) return card;
+            if (card.contains(mouseX, mouseY)) return card;
         }
 
         return null;
