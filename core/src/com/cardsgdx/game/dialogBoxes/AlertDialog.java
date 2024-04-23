@@ -6,39 +6,58 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
-public class AlertDialog {
-    private static final float WIDTH = 300f;
-    private static final float HEIGHT = 150f;
-
+public class AlertDialog implements StandardDialog {
     private final Dialog dialog;
-    private final Label textLabel;
+    private final Label title;
+    private final Label message;
     private final TextButton confirmButton;
+    private boolean response;
 
     public AlertDialog(Skin skin) {
-        this.dialog = new Dialog("Alert", skin);
+        this.dialog = new Dialog("AlertDialog", skin) {
+            @Override
+            protected void result(Object object) {
+                AlertDialog.this.response = (boolean) object;
+            }
+        };
+
+        this.dialog.getContentTable().pad(10);
         this.dialog.getButtonTable().defaults().growX();
         this.dialog.setModal(true);
         this.dialog.setMovable(true);
         this.dialog.setResizable(false);
 
-        this.textLabel = new Label("Click the ok button to continue", skin);
+        this.title = this.dialog.getTitleLabel();
+        this.message = new Label("Placeholder text", skin);
         this.confirmButton = new TextButton("Ok", skin);
 
-        this.dialog.text(this.textLabel);
+        this.dialog.text(this.message);
         this.dialog.button(this.confirmButton, true);
+
+        this.response = false;
     }
 
-    public void setText(CharSequence newText) {
-        this.textLabel.setText(newText);
+    @Override
+    public void setTitle(CharSequence title) {
+        this.title.setText(title);
     }
 
-    public void show(Stage stage) {
+    @Override
+    public void setMessage(CharSequence message) {
+        this.message.setText(message);
+    }
+
+    @Override
+    public void show(Stage stage, CharSequence title, CharSequence message) {
+        this.setTitle(title);
+        this.setMessage(message);
         this.dialog.show(stage);
-        this.dialog.setSize(AlertDialog.WIDTH, AlertDialog.HEIGHT);
+        this.dialog.setHeight(StandardDialog.HEIGHT);
     }
 
-    public void show(String text, Stage stage) {
-        this.setText(text);
-        this.show(stage);
+    @Override
+    public boolean getResponse() {
+        // TODO: the response of this dialog is useless, it doesn't wait for the users input, making it unpredictable
+        return this.response;
     }
 }
