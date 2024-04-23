@@ -7,8 +7,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import java.util.Iterator;
-
 public class CardManager {
     public static final int ROWS = 4;
     public static final int COLS = 10;
@@ -19,7 +17,6 @@ public class CardManager {
     private Card previousCard;
     private Card currentCard;
     private final Timer timer;
-    private final Task turnCards;
 
     public CardManager(TextureAtlas atlas) {
         this.timer = new Timer();
@@ -41,34 +38,18 @@ public class CardManager {
 
         this.playingCards.shuffle();
         this.setCardsPosition();
-
-        this.turnCards = new Task() {
-            @Override
-            public void run() {
-                CardManager.this.playingCards.forEach(card -> {
-                    if (card.isTurned && !card.isMatched) card.turn();
-                });
-                CardManager.this.previousCard = null;
-            }
-        };
     }
 
     public void setCardsPosition() {
-        Iterator<Card> cards = this.playingCards.iterator();
         for (int i = 0; i < CardManager.ROWS; i++) {
             for (int j = 0; j < CardManager.COLS; j++) {
-                if (!cards.hasNext()) return;
-                Card card = cards.next();
+                Card card = this.playingCards.get(i * CardManager.COLS + j); // using rows and cols on a 1D array
                 card.setPosition(j * (Card.WIDTH + CardManager.PADDING), i * (Card.HEIGHT + CardManager.PADDING));
             }
         }
     }
 
     public void processMouseInput(float mouseX, float mouseY) {
-        // Skips processing if there's a schedule task
-        // This means you can't select another card while 2 cards are turned up
-        if (!this.timer.isEmpty()) return;
-
         // Get the first card at the mouse coordinates and filters it before moving on
         this.currentCard = this.getCardAt(mouseX, mouseY);
         if (this.currentCard == null || this.currentCard.isTurned || this.currentCard.isMatched) return;
@@ -82,10 +63,11 @@ public class CardManager {
         if (Card.match(this.previousCard, this.currentCard)) {
             this.previousCard.isMatched = true;
             this.currentCard.isMatched = true;
-            this.previousCard = null;
         } else {
-            this.timer.scheduleTask(this.turnCards, CardManager.DELAY);
+            this.turnCards(this.previousCard, this.currentCard);
         }
+
+        this.previousCard = null;
     }
 
     public Card getCardAt(float mouseX, float mouseY) {
@@ -95,6 +77,16 @@ public class CardManager {
         }
 
         return null;
+    }
+
+    public void turnCards(Card firstCard, Card secondCard) {
+        this.timer.scheduleTask(new Task() {
+            @Override
+            public void run() {
+                firstCard.turn();
+                secondCard.turn();
+            }
+        }, CardManager.DELAY);
     }
 
     public void drawAllCards(SpriteBatch batch) {
