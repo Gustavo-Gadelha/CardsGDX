@@ -51,7 +51,7 @@ public class MenuScreen implements Screen {
         nameInput.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                MenuScreen.this.playerName = nameInput.getText().strip();
+                MenuScreen.this.playerName = nameInput.getText().trim();
                 System.out.println(MenuScreen.this.playerName);
             }
         });
@@ -72,7 +72,11 @@ public class MenuScreen implements Screen {
                     MenuScreen.this.dispose();
                     MenuScreen.this.game.setScreen(new GameScreen(game));
                 } else {
-                    MenuScreen.this.alertDialog.show("Please input a valid name", MenuScreen.this.stage);
+                    MenuScreen.this.alertDialog.show(
+                            MenuScreen.this.stage,
+                            "Invalid name",
+                            "Please enter a non-empty and less than 50 character name"
+                    );
                 }
             }
         });
@@ -97,7 +101,7 @@ public class MenuScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0.4f, 1);
-        // No need to update the camera or set projection matrix, stage alredy does it
+        // No need to update the camera or set projection matrix, stage already does it
         this.viewport.apply(true);
         stage.act();
         stage.draw();

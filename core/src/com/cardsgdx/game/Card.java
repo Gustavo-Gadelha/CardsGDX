@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Card {
     public static final float WIDTH = 128f;
-    public static final float HEIGHT = WIDTH * 1.48f;
+    public static final float HEIGHT = WIDTH * 1.484375f;
 
     private Card match;
     private final Sprite front;
@@ -19,9 +19,7 @@ public class Card {
         this.back = back;
         this.isTurned = false;
         this.isMatched = false;
-
-        // ~128x190 (128x189.44)
-        this.setSize(WIDTH, HEIGHT);
+        this.setSize(WIDTH, HEIGHT); // 128x190
     }
 
     public Card createMatch() {
@@ -41,7 +39,7 @@ public class Card {
         this.back.setPosition(x, y);
     }
 
-    public boolean overlaps(float x, float y) {
+    public boolean contains(float x, float y) {
         if (this.isTurned) {
             return this.front.getBoundingRectangle().contains(x, y);
         } else {

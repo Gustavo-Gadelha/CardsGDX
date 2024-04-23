@@ -11,6 +11,7 @@ public class DesktopLauncher {
         config.setForegroundFPS(60);
         config.setTitle("CardsGDX");
         config.setWindowedMode(1280, 800);
+        config.setWindowIcon("icon/icon32x32.png");
         new Lwjgl3Application(new CardGame(), config);
     }
 }
