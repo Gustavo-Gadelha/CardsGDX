@@ -54,6 +54,7 @@ public class CardManager {
         this.currentCard = this.getCardAt(mouseX, mouseY);
         if (this.currentCard == null || this.currentCard.isTurned || this.currentCard.isMatched) return;
 
+        // if there's no previous card, passes the current one to it and skips the rest
         this.currentCard.turn();
         if (this.previousCard == null) {
             this.previousCard = this.currentCard;
@@ -71,7 +72,7 @@ public class CardManager {
     }
 
     public Card getCardAt(float mouseX, float mouseY) {
-        // Goes through every card and returns the first one to overlap
+        // Goes through every card and returns the first one that contains the x and y coordinates within its bounds
         for (Card card : this.playingCards) {
             if (card.contains(mouseX, mouseY)) return card;
         }
@@ -80,6 +81,7 @@ public class CardManager {
     }
 
     public void turnCards(Card firstCard, Card secondCard) {
+        // Turns the two card parameters in the set delay
         this.timer.scheduleTask(new Task() {
             @Override
             public void run() {

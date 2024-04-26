@@ -1,4 +1,4 @@
-Cards.png
+cards.png
 	size: 2048, 2048
 	repeat: none
 Clubs
@@ -74,7 +74,7 @@ Diamonds
 	index: 11
 	bounds: 1662, 1478, 330, 490
 
-Cards2.png
+cards2.png
 	size: 2048, 2048
 	repeat: none
 Diamonds
@@ -150,7 +150,7 @@ Spades
 	index: 9
 	bounds: 1662, 1478, 330, 490
 
-Cards3.png
+cards3.png
 	size: 2048, 512
 	repeat: none
 Spades

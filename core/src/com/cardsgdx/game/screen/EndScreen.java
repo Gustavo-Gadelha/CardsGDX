@@ -1,11 +1,12 @@
-package com.cardsgdx.game;
+package com.cardsgdx.game.screen;
 
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.cardsgdx.game.CardGame;
 
 public class EndScreen implements Screen {
     private final CardGame game;
-    private ScreenViewport viewport;
+    private final ScreenViewport viewport;
 
     public EndScreen(CardGame game) {
         this.game = game;

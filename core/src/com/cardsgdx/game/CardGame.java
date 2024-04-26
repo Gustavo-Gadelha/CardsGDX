@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.cardsgdx.game.screen.MenuScreen;
 
 public class CardGame extends Game {
     public SpriteBatch batch;
@@ -17,7 +18,7 @@ public class CardGame extends Game {
     public void create() {
         this.batch = new SpriteBatch();
         this.font = new BitmapFont();
-        this.atlas = new TextureAtlas("card_atlas/Cards.atlas");
+        this.atlas = new TextureAtlas("card_atlas/cards.atlas");
         this.skin = new Skin(Gdx.files.internal("ui/cloud-form-ui.json"));
         this.setScreen(new MenuScreen(this));
     }

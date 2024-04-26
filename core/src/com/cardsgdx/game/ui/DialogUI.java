@@ -1,16 +1,16 @@
-package com.cardsgdx.game.dialogBoxes;
+package com.cardsgdx.game.ui;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
-public interface StandardDialog {
+public interface DialogUI {
     float WIDTH = 300f;
-    float HEIGHT = 120f;
+    float HEIGHT = 150f;
+
+    void configure();
 
     void setTitle(CharSequence title);
 
     void setMessage(CharSequence message);
 
     void show(Stage stage, CharSequence title, CharSequence message);
-
-    boolean getResponse();
 }

@@ -1,21 +1,28 @@
-package com.cardsgdx.game;
+package com.cardsgdx.game.screen;
 
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.scenes.scene2d.*;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.cardsgdx.game.dialogBoxes.AlertDialog;
+import com.cardsgdx.game.CardGame;
+import com.cardsgdx.game.ui.AlertDialog;
+import com.cardsgdx.game.ui.ConfirmDialog;
 
 public class MenuScreen implements Screen {
     private final CardGame game;
     private final ScreenViewport viewport;
     private final Stage stage;
     private final AlertDialog alertDialog;
+    private final ConfirmDialog confirmDialog;
     private String playerName;
 
     public MenuScreen(CardGame game) {
@@ -26,26 +33,34 @@ public class MenuScreen implements Screen {
         this.stage = new Stage(this.viewport, this.game.batch);
         Gdx.input.setInputProcessor(stage);
 
-        // Alert dialog
+        // Alert dialog for notifying an empty name
         this.alertDialog = new AlertDialog(this.game.skin);
 
-        // Instantiates the skin and configures the table
+        // Confim dialog for exiting the game
+        this.confirmDialog = new ConfirmDialog(this.game.skin) {
+            @Override
+            protected void result(Object object) {
+                if ((boolean) object) Gdx.app.exit();
+            }
+        };
+
+        // Creating table and setting pad and width of the table
         Table table = new Table(this.game.skin);
         table.setFillParent(true);
         table.defaults().pad(10);
         table.defaults().width(300);
 
-        // Creation of buttons and the name input
+        // Creating of name input field, along with "start" and "exit" buttons
         TextField nameInput = new TextField("Your name here", this.game.skin);
         TextButton startButton = new TextButton("Start Game", this.game.skin);
         TextButton exitButton = new TextButton("Exit", this.game.skin);
 
-        // Adding buttons and input to table, use rows to separate the buttons
+        // Adding field and buttons to table, use table.row() to signify end of the current row
         table.add(nameInput);
         table.row();
-        table.add(startButton).colspan(2).fillX();
+        table.add(startButton).fillX();
         table.row();
-        table.add(exitButton).colspan(2).fillX();
+        table.add(exitButton).fillX();
 
         // TODO: check input and pass this to the game, limit to 50 characters
         nameInput.addListener(new ChangeListener() {
@@ -72,11 +87,7 @@ public class MenuScreen implements Screen {
                     MenuScreen.this.dispose();
                     MenuScreen.this.game.setScreen(new GameScreen(game));
                 } else {
-                    MenuScreen.this.alertDialog.show(
-                            MenuScreen.this.stage,
-                            "Invalid name",
-                            "Please enter a non-empty and less than 50 character name"
-                    );
+                    MenuScreen.this.alertDialog.show(MenuScreen.this.stage, "Invalid name", "Please enter a non-empty and less than 50 character name");
                 }
             }
         });
@@ -85,7 +96,7 @@ public class MenuScreen implements Screen {
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.exit();
+                MenuScreen.this.confirmDialog.show(MenuScreen.this.stage, "Exit the game", "Are you sure you want to exit the game?");
             }
         });
 

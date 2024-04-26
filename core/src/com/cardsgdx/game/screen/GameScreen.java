@@ -1,10 +1,13 @@
-package com.cardsgdx.game;
+package com.cardsgdx.game.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.cardsgdx.game.Card;
+import com.cardsgdx.game.CardGame;
+import com.cardsgdx.game.CardManager;
 
 public class GameScreen implements Screen {
     private final CardGame game;
