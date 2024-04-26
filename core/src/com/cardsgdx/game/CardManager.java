@@ -43,8 +43,10 @@ public class CardManager {
     public void setCardsPosition() {
         for (int i = 0; i < CardManager.ROWS; i++) {
             for (int j = 0; j < CardManager.COLS; j++) {
-                Card card = this.playingCards.get(i * CardManager.COLS + j); // using rows and cols on a 1D array
-                card.setPosition(j * (Card.WIDTH + CardManager.PADDING), i * (Card.HEIGHT + CardManager.PADDING));
+                float x = j * (Card.WIDTH + CardManager.PADDING);
+                float y = i * (Card.HEIGHT + CardManager.PADDING);
+                // 1D index through rows and cols, always works since array size is rows * cols
+                this.playingCards.get(i * CardManager.COLS + j).setPosition(x, y);
             }
         }
     }
