@@ -6,7 +6,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.cardsgdx.game.screen.MenuScreen;
+import com.cardsgdx.game.screen.ScreenManager;
+import com.cardsgdx.game.screen.ScreenManager.Type;
 
 public class CardGame extends Game {
     public SpriteBatch batch;
@@ -23,7 +24,8 @@ public class CardGame extends Game {
         this.skin = new Skin(Gdx.files.internal("ui/cloud-form-ui.json"));
         this.player = null;
 
-        this.setScreen(new MenuScreen(this));
+        ScreenManager.createFrom(this);
+        this.setScreen(ScreenManager.get(Type.MENU_SCREEN));
     }
 
     @Override
@@ -37,5 +39,6 @@ public class CardGame extends Game {
         this.font.dispose();
         this.atlas.dispose();
         this.skin.dispose();
+        ScreenManager.dispose();
     }
 }
