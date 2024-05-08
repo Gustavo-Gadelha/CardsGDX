@@ -49,7 +49,8 @@ public class GameScreen implements Screen {
         if (Gdx.input.justTouched()) {
             this.touchPoint.set(Gdx.input.getX(), Gdx.input.getY());
             Vector2 mousePos = this.viewport.unproject(this.touchPoint);
-            this.cardManager.processMouseInput(mousePos.x, mousePos.y);
+            this.cardManager.processMouseInput(this.game.player, mousePos.x, mousePos.y);
+            Gdx.app.log("Score", String.valueOf(this.game.player.getScore())); // TODO: Delete this once project is done
         }
 
         this.game.batch.begin();

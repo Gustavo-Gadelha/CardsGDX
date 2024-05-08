@@ -13,6 +13,7 @@ public class CardGame extends Game {
     public BitmapFont font;
     public TextureAtlas atlas;
     public Skin skin;
+    public Player player;
 
     @Override
     public void create() {
@@ -20,6 +21,8 @@ public class CardGame extends Game {
         this.font = new BitmapFont();
         this.atlas = new TextureAtlas("card_atlas/cards.atlas");
         this.skin = new Skin(Gdx.files.internal("ui/cloud-form-ui.json"));
+        this.player = null;
+
         this.setScreen(new MenuScreen(this));
     }
 

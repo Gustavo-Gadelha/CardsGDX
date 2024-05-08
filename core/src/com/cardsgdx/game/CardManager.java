@@ -51,7 +51,7 @@ public class CardManager {
         }
     }
 
-    public void processMouseInput(float mouseX, float mouseY) {
+    public void processMouseInput(Player player, float mouseX, float mouseY) {
         // Get the first card at the mouse coordinates and filters it before moving on
         this.currentCard = this.getCardAt(mouseX, mouseY);
         if (this.currentCard == null || this.currentCard.isTurned || this.currentCard.isMatched) return;
@@ -66,8 +66,10 @@ public class CardManager {
         if (Card.match(this.previousCard, this.currentCard)) {
             this.previousCard.isMatched = true;
             this.currentCard.isMatched = true;
+            player.addPoints(40);
         } else {
             this.turnCards(this.previousCard, this.currentCard);
+            player.deductPoints(10);
         }
 
         this.previousCard = null;

@@ -1,10 +1,6 @@
 package com.cardsgdx.game;
 
-import com.badlogic.gdx.utils.Array;
-
 public class Player {
-    private static final Array<Player> players = new Array<>();
-
     private final String name;
     private int score;
 
@@ -21,10 +17,6 @@ public class Player {
     public void deductPoints(int value) {
         if (value < 0) throw new RuntimeException("Deducting negative values from score");
         this.score -= value;
-    }
-
-    public static Array<Player> getPlayers() {
-        return Player.players;
     }
 
     public String getName() {
