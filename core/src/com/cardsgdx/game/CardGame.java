@@ -6,20 +6,26 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.cardsgdx.game.screen.ScreenManager;
+import com.cardsgdx.game.screen.ScreenManager.Type;
 
 public class CardGame extends Game {
     public SpriteBatch batch;
     public BitmapFont font;
     public TextureAtlas atlas;
     public Skin skin;
+    public Player player;
 
     @Override
     public void create() {
         this.batch = new SpriteBatch();
         this.font = new BitmapFont();
-        this.atlas = new TextureAtlas("card_atlas/Cards.atlas");
+        this.atlas = new TextureAtlas("card_atlas/cards.atlas");
         this.skin = new Skin(Gdx.files.internal("ui/cloud-form-ui.json"));
-        this.setScreen(new MenuScreen(this));
+        this.player = null;
+
+        ScreenManager.createFrom(this);
+        this.setScreen(ScreenManager.get(Type.MENU_SCREEN));
     }
 
     @Override
@@ -33,5 +39,6 @@ public class CardGame extends Game {
         this.font.dispose();
         this.atlas.dispose();
         this.skin.dispose();
+        ScreenManager.dispose();
     }
 }

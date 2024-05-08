@@ -43,17 +43,20 @@ public class CardManager {
     public void setCardsPosition() {
         for (int i = 0; i < CardManager.ROWS; i++) {
             for (int j = 0; j < CardManager.COLS; j++) {
-                Card card = this.playingCards.get(i * CardManager.COLS + j); // using rows and cols on a 1D array
-                card.setPosition(j * (Card.WIDTH + CardManager.PADDING), i * (Card.HEIGHT + CardManager.PADDING));
+                float x = j * (Card.WIDTH + CardManager.PADDING);
+                float y = i * (Card.HEIGHT + CardManager.PADDING);
+                // 1D index through rows and cols, always works since array size is rows * cols
+                this.playingCards.get(i * CardManager.COLS + j).setPosition(x, y);
             }
         }
     }
 
-    public void processMouseInput(float mouseX, float mouseY) {
+    public void processMouseInput(Player player, float mouseX, float mouseY) {
         // Get the first card at the mouse coordinates and filters it before moving on
         this.currentCard = this.getCardAt(mouseX, mouseY);
         if (this.currentCard == null || this.currentCard.isTurned || this.currentCard.isMatched) return;
 
+        // if there's no previous card, passes the current one to it and skips the rest
         this.currentCard.turn();
         if (this.previousCard == null) {
             this.previousCard = this.currentCard;
@@ -63,15 +66,17 @@ public class CardManager {
         if (Card.match(this.previousCard, this.currentCard)) {
             this.previousCard.isMatched = true;
             this.currentCard.isMatched = true;
+            player.addPoints(40);
         } else {
             this.turnCards(this.previousCard, this.currentCard);
+            player.deductPoints(10);
         }
 
         this.previousCard = null;
     }
 
     public Card getCardAt(float mouseX, float mouseY) {
-        // Goes through every card and returns the first one to overlap
+        // Goes through every card and returns the first one that contains the x and y coordinates within its bounds
         for (Card card : this.playingCards) {
             if (card.contains(mouseX, mouseY)) return card;
         }
@@ -80,6 +85,7 @@ public class CardManager {
     }
 
     public void turnCards(Card firstCard, Card secondCard) {
+        // Turns the two card parameters in the set delay
         this.timer.scheduleTask(new Task() {
             @Override
             public void run() {
