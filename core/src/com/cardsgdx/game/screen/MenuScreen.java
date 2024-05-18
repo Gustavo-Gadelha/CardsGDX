@@ -90,8 +90,7 @@ public class MenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (MenuScreen.this.playerName != null && !MenuScreen.this.playerName.isEmpty()) {
-                    MenuScreen.this.dispose();
-                    MenuScreen.this.game.player = new Player(MenuScreen.this.playerName);
+                    MenuScreen.this.game.player = new Player(MenuScreen.this.playerName, 0);
                     MenuScreen.this.game.setScreen(ScreenManager.get(Type.GAME_SCREEN));
                 } else {
                     MenuScreen.this.alertDialog.show(MenuScreen.this.stage, "Invalid name", "Please enter a non-empty and less than 50 character name");

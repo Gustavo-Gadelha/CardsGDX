@@ -1,12 +1,19 @@
 package com.cardsgdx.game;
 
 public class Player {
-    private final String name;
+    private int id;
+    private String name;
     private int score;
 
-    public Player(String name) {
+    public Player(int id, String name, int score) {
+        this.id = id;
         this.name = name;
-        this.score = 0;
+        this.score = score;
+    }
+
+    public Player(String name, int score) {
+        this.name = name;
+        this.score = score;
     }
 
     public void addPoints(int value) {
@@ -17,6 +24,14 @@ public class Player {
     public void deductPoints(int value) {
         if (value < 0) throw new RuntimeException("Deducting negative values from score");
         this.score -= value;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
