@@ -1,6 +1,5 @@
 package com.cardsgdx.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -10,7 +9,7 @@ import com.badlogic.gdx.utils.Timer.Task;
 
 public class CardManager {
     public static final int ROWS = 4;
-    public static final int COLS = 2;
+    public static final int COLS = 10;
     public static final float PADDING = 2f;
     public static final float DELAY = 0.25f;
 
@@ -70,7 +69,7 @@ public class CardManager {
             this.previousCard.isMatched = true;
             this.currentCard.isMatched = true;
             this.numberOfMatches += 2;
-            player.addPoints(40);
+            player.addPoints(80);
         } else {
             this.turnCards(this.previousCard, this.currentCard);
             player.deductPoints(10);

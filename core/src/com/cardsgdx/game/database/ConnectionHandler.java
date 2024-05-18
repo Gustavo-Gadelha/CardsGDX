@@ -24,7 +24,6 @@ public class ConnectionHandler {
         if (connection == null) return;
 
         try {
-            connection.commit();
             connection.close();
         } catch (SQLException e) {
             System.err.println(e.getMessage());

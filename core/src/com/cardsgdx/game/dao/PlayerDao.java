@@ -15,10 +15,11 @@ public class PlayerDao implements IDao<Player>, Disposable {
     private static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS players (id INTEGER PRIMARY KEY, name TEXT, score INTEGER);";
     private static final String INSERT_SQL = "INSERT INTO players (name, score) VALUES (?, ?);";
     private static final String FIND_BY_ID_SQL = "SELECT * FROM players WHERE id = ?;";
+    private static final String FIND_BY_NAME_SQL = "SELECT * FROM players WHERE name = ?;";
     private static final String FIND_ALL_SQL = "SELECT * FROM players;";
+    private static final String FIND_LIMIT_SQL = "SELECT * FROM players ORDER BY score DESC LIMIT ?;";
     private static final String UPDATE_SQL = "UPDATE players SET name = ?, score = ? WHERE id = ?;";
     private static final String DELETE_SQL = "DELETE FROM players WHERE id = ?;";
-    private static final String SELECT_LAST_INSERT_ID = "SELECT last_insert_rowid()";
 
     private final Connection connection;
 
@@ -37,20 +38,22 @@ public class PlayerDao implements IDao<Player>, Disposable {
 
     @Override
     public void insert(Player player) {
-        try (
-                PreparedStatement statement = this.connection.prepareStatement(INSERT_SQL);
-                PreparedStatement function = this.connection.prepareStatement(SELECT_LAST_INSERT_ID)
-        ) {
+        try (PreparedStatement statement = this.connection.prepareStatement(INSERT_SQL)) {
             statement.setString(1, player.getName());
             statement.setInt(2, player.getScore());
             statement.executeUpdate();
-
-            ResultSet resultSet = function.executeQuery();
-            if (resultSet.next()) player.setId(resultSet.getInt("last_insert_rowid()"));
-
-            resultSet.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void insertOrUpdate(Player player) {
+        Player playerEntity = this.getByName(player.getName());
+        if (playerEntity != null) {
+            player.setId(playerEntity.getId());
+            this.update(player);
+        } else {
+            this.insert(player);
         }
     }
 
@@ -63,7 +66,26 @@ public class PlayerDao implements IDao<Player>, Disposable {
 
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                player = this.toPlayerObject(resultSet);
+                player = this.mapToPlayerObject(resultSet);
+            }
+
+            resultSet.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return player;
+    }
+
+    public Player getByName(String name) {
+        Player player = null;
+
+        try (PreparedStatement statement = this.connection.prepareStatement(FIND_BY_NAME_SQL)) {
+            statement.setString(1, name);
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                player = this.mapToPlayerObject(resultSet);
             }
 
             resultSet.close();
@@ -81,7 +103,26 @@ public class PlayerDao implements IDao<Player>, Disposable {
         try (PreparedStatement statement = this.connection.prepareStatement(FIND_ALL_SQL)) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                players.add(toPlayerObject(resultSet));
+                players.add(this.mapToPlayerObject(resultSet));
+            }
+
+            resultSet.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return players;
+    }
+
+    public List<Player> getTop(int limit) {
+        List<Player> players = new ArrayList<>(10);
+
+        try (PreparedStatement statement = this.connection.prepareStatement(FIND_LIMIT_SQL)) {
+            statement.setInt(1, limit);
+
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                players.add(this.mapToPlayerObject(resultSet));
             }
 
             resultSet.close();
@@ -116,7 +157,7 @@ public class PlayerDao implements IDao<Player>, Disposable {
         }
     }
 
-    private Player toPlayerObject(ResultSet rs) {
+    private Player mapToPlayerObject(ResultSet rs) {
         try {
             return new Player(rs.getInt("id"), rs.getString("name"), rs.getInt("score"));
         } catch (SQLException e) {

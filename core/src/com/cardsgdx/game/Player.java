@@ -11,9 +11,10 @@ public class Player {
         this.score = score;
     }
 
-    public Player(String name, int score) {
+    public Player(String name) {
+        this.id = -1;
         this.name = name;
-        this.score = score;
+        this.score = 0;
     }
 
     public void addPoints(int value) {

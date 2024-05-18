@@ -26,7 +26,12 @@ public class ScreenManager {
         return SCREENS.getOrDefault(type, null);
     }
 
-    public static void dispose() {
+    public static Screen getNew(Type type, Screen screen) {
+        SCREENS.put(type, screen);
+        return SCREENS.getOrDefault(type, null);
+    }
+
+    public static void disposeAll() {
         SCREENS.forEach((type, screen) -> screen.dispose());
     }
 }

@@ -23,7 +23,7 @@ public class CardGame extends Game {
         this.batch = new SpriteBatch();
         this.font = new BitmapFont();
         this.atlas = new TextureAtlas("card_atlas/cards.atlas");
-        this.skin = new Skin(Gdx.files.internal("ui/cloud-form-ui.json"));
+        this.skin = new Skin(Gdx.files.internal("ui/default-gdx/uiskin.json"));
 
         this.player = null;
         this.playerDao = new PlayerDao();
@@ -43,6 +43,7 @@ public class CardGame extends Game {
         this.font.dispose();
         this.atlas.dispose();
         this.skin.dispose();
-        ScreenManager.dispose();
+        this.playerDao.dispose();
+        ScreenManager.disposeAll();
     }
 }

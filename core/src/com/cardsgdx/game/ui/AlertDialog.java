@@ -44,6 +44,7 @@ public class AlertDialog extends Dialog implements DialogUI {
     public void show(Stage stage, CharSequence title, CharSequence message) {
         this.setTitle(title);
         this.setMessage(message);
+        this.pack();
         this.show(stage);
         this.setHeight(DialogUI.HEIGHT);
     }
