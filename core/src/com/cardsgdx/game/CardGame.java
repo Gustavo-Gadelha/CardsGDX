@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.cardsgdx.game.dao.PlayerDao;
 import com.cardsgdx.game.screen.ScreenManager;
 import com.cardsgdx.game.screen.ScreenManager.Type;
 
@@ -15,6 +16,7 @@ public class CardGame extends Game {
     public TextureAtlas atlas;
     public Skin skin;
     public Player player;
+    public PlayerDao playerDao;
 
     @Override
     public void create() {
@@ -22,7 +24,9 @@ public class CardGame extends Game {
         this.font = new BitmapFont();
         this.atlas = new TextureAtlas("card_atlas/cards.atlas");
         this.skin = new Skin(Gdx.files.internal("ui/cloud-form-ui.json"));
+
         this.player = null;
+        this.playerDao = new PlayerDao();
 
         ScreenManager.createFrom(this);
         this.setScreen(ScreenManager.get(Type.MENU_SCREEN));

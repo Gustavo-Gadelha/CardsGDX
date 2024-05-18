@@ -49,7 +49,6 @@ public class PlayerDao implements IDao<Player>, Disposable {
             if (resultSet.next()) player.setId(resultSet.getInt("last_insert_rowid()"));
 
             resultSet.close();
-            System.out.println(player.getId()); // TODO: DELETE THIS AS SOON AS IT IS CONFIRMED TO WORK
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

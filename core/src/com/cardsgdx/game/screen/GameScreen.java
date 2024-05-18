@@ -10,6 +10,8 @@ import com.cardsgdx.game.Card;
 import com.cardsgdx.game.CardGame;
 import com.cardsgdx.game.CardManager;
 
+import static com.cardsgdx.game.screen.ScreenManager.Type.END_SCREEN;
+
 
 public class GameScreen implements Screen {
     private final CardGame game;
@@ -42,6 +44,11 @@ public class GameScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0.4f, 1);
+
+        if (this.cardManager.isAllMatched()) {
+            this.game.playerDao.insert(this.game.player);
+            this.game.setScreen(ScreenManager.get(END_SCREEN));
+        }
 
         this.viewport.apply(true);
         this.game.batch.setProjectionMatrix(this.viewport.getCamera().combined);

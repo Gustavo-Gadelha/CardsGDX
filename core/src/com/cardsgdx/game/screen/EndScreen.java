@@ -1,6 +1,7 @@
 package com.cardsgdx.game.screen;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.cardsgdx.game.CardGame;
 
@@ -20,6 +21,7 @@ public class EndScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        ScreenUtils.clear(0, 0, 0.4f, 1);
         // TODO: Draw the top 10 on the leaderboard here
     }
 
