@@ -14,6 +14,7 @@ public class CardManager {
     public static final float DELAY = 0.25f;
 
     private final Array<Card> playingCards;
+    private int numberOfMatches;
     private Card previousCard;
     private Card currentCard;
     private final Timer timer;
@@ -37,6 +38,7 @@ public class CardManager {
         }
 
         this.playingCards.shuffle();
+        this.numberOfMatches = 0;
         this.setCardsPosition();
     }
 
@@ -66,7 +68,8 @@ public class CardManager {
         if (Card.match(this.previousCard, this.currentCard)) {
             this.previousCard.isMatched = true;
             this.currentCard.isMatched = true;
-            player.addPoints(40);
+            this.numberOfMatches += 2;
+            player.addPoints(80);
         } else {
             this.turnCards(this.previousCard, this.currentCard);
             player.deductPoints(10);
@@ -93,6 +96,10 @@ public class CardManager {
                 secondCard.turn();
             }
         }, CardManager.DELAY);
+    }
+
+    public boolean isAllMatched() {
+        return (this.numberOfMatches >= this.playingCards.size);
     }
 
     public void drawAllCards(SpriteBatch batch) {
