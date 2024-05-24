@@ -10,6 +10,7 @@ import com.cardsgdx.game.Card;
 import com.cardsgdx.game.CardGame;
 import com.cardsgdx.game.CardManager;
 
+import static com.cardsgdx.game.screen.ScreenManager.Type.END_SCREEN;
 
 public class GameScreen implements Screen {
     private final CardGame game;
@@ -49,13 +50,18 @@ public class GameScreen implements Screen {
         if (Gdx.input.justTouched()) {
             this.touchPoint.set(Gdx.input.getX(), Gdx.input.getY());
             Vector2 mousePos = this.viewport.unproject(this.touchPoint);
-            this.cardManager.processMouseInput(this.game.player, mousePos.x, mousePos.y);
-            Gdx.app.log("Score", String.valueOf(this.game.player.getScore())); // TODO: Delete this once project is done
+            this.cardManager.processMouseInput(this.game.getPlayer(), mousePos.x, mousePos.y);
+            Gdx.app.log("Score", String.valueOf(this.game.getPlayer().getScore())); // TODO: Delete this once project is done
         }
 
         this.game.batch.begin();
         this.cardManager.drawAllCards(this.game.batch);
         this.game.batch.end();
+
+        if (this.cardManager.isAllMatched()) {
+            this.game.playerDao.insert(this.game.getPlayer());
+            this.game.setScreen(ScreenManager.get(END_SCREEN));
+        }
     }
 
     @Override

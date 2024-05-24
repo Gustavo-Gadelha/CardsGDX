@@ -22,11 +22,15 @@ public class ScreenManager {
         SCREENS.put(Type.END_SCREEN, new EndScreen(game));
     }
 
+    public static void put(Type type, Screen screen) {
+        SCREENS.put(type, screen);
+    }
+
     public static Screen get(Type type) {
         return SCREENS.getOrDefault(type, null);
     }
 
-    public static void dispose() {
+    public static void disposeAll() {
         SCREENS.forEach((type, screen) -> screen.dispose());
     }
 }
