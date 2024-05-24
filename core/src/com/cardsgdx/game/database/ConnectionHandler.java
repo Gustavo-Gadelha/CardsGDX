@@ -23,10 +23,8 @@ public class ConnectionHandler {
     }
 
     public static void closeConnection(Connection connection) {
-        if (connection == null) return;
-
         try {
-            connection.close();
+            if (connection != null) connection.close();
         } catch (SQLException e) {
             System.err.println(e.getMessage());
             throw new RuntimeException(e);

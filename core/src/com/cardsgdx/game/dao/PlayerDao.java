@@ -15,7 +15,6 @@ public class PlayerDao implements IDao<Player>, Disposable {
     private static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS players (id INTEGER PRIMARY KEY, name TEXT UNIQUE, score INTEGER);";
     private static final String UPSERT_SQL = "INSERT INTO players (name, score) VALUES (?, ?) ON CONFLICT (name) DO UPDATE SET score = excluded.score RETURNING *;";
     private static final String FIND_BY_ID_SQL = "SELECT * FROM players WHERE id = ?;";
-    private static final String FIND_BY_NAME_SQL = "SELECT * FROM players WHERE name = ?;";
     private static final String FIND_ALL_SQL = "SELECT * FROM players;";
     private static final String FIND_LIMIT_SQL = "SELECT * FROM players ORDER BY score DESC LIMIT ?;";
     private static final String UPDATE_SQL = "UPDATE players SET name = ?, score = ? WHERE id = ?;";
@@ -60,24 +59,6 @@ public class PlayerDao implements IDao<Player>, Disposable {
 
         try (PreparedStatement statement = this.connection.prepareStatement(FIND_BY_ID_SQL)) {
             statement.setLong(1, id);
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    player = PlayerDao.toPlayer(resultSet);
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return player;
-    }
-
-    public Player getByName(String name) {
-        Player player = null;
-
-        try (PreparedStatement statement = this.connection.prepareStatement(FIND_BY_NAME_SQL)) {
-            statement.setString(1, name);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {

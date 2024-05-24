@@ -19,10 +19,14 @@ import java.util.List;
 import static com.cardsgdx.game.screen.ScreenManager.Type.GAME_SCREEN;
 
 public class EndScreen implements Screen {
+    public static final int PLAYER_LIMIT = 10;
+
     private final CardGame game;
     private final ScreenViewport viewport;
     private final Stage stage;
     private final Dialog leaderboard;
+    private final Table playersTable;
+    private final Table buttonTable;
 
     public EndScreen(CardGame game) {
         this.game = game;
@@ -31,43 +35,31 @@ public class EndScreen implements Screen {
         this.viewport = new ScreenViewport();
         this.stage = new Stage(this.viewport, this.game.batch);
 
-        // Queries 10 players with the highest score and creates the table
-        List<Player> players = this.game.playerDao.getTop(10);
-        this.leaderboard = this.createLeaderboard(players);
+        // Creating the dialog
+        this.leaderboard = new Dialog("Leaderboard", this.game.skin);
+        this.leaderboard.setModal(true);
+        this.leaderboard.setMovable(true);
+        this.leaderboard.setResizable(false);
+
+        // Setting the table references
+        this.playersTable = this.leaderboard.getContentTable();
+        this.buttonTable = this.leaderboard.getButtonTable();
+
+        // Creates "exit" and "play again" buttons
+        this.createButtons();
 
         // Adding table to stage
+        this.playersTable.debug();
         this.stage.addActor(leaderboard);
     }
 
-    private Dialog createLeaderboard(List<Player> players) {
-        // Instantiating the dialog
-        Dialog dialog = new Dialog("Leaderboard", this.game.skin);
-        dialog.setModal(true);
-        dialog.setMovable(true);
-        dialog.setResizable(false);
-
-        // Creating leaderboard and setting pad and width of the leaderboard
-        Table leaderboard = dialog.getContentTable();
-        leaderboard.defaults().pad(10);
-        leaderboard.defaults().width(100);
-
-        // TODO: add current player score to the top of the leaderboard
-        players.forEach(player -> {
-            Label playerName = new Label(player.getName(), this.game.skin);
-            Label playerScore = new Label(String.valueOf(player.getScore()), this.game.skin);
-
-            leaderboard.add(playerName);
-            leaderboard.add(playerScore);
-            leaderboard.row();
-        });
-
+    private void createButtons() {
         // Adding 'exit' and 'play again' buttons
-        Table leaderboardButtons = dialog.getButtonTable();
         TextButton exitButton = new TextButton("Exit", this.game.skin);
-        TextButton playAgainButton= new TextButton("Play Again", this.game.skin);
+        TextButton playAgainButton = new TextButton("Play Again", this.game.skin);
 
-        leaderboardButtons.add(exitButton).grow();
-        leaderboardButtons.add(playAgainButton).grow();
+        this.buttonTable.add(exitButton).grow();
+        this.buttonTable.add(playAgainButton).grow();
 
         // Exits the game
         exitButton.addListener(new ClickListener() {
@@ -81,27 +73,62 @@ public class EndScreen implements Screen {
         playAgainButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                EndScreen.this.game.setScreen(ScreenManager.getNew(GAME_SCREEN, new GameScreen(EndScreen.this.game)));
+                ScreenManager.put(GAME_SCREEN, new GameScreen(EndScreen.this.game));
+                EndScreen.this.game.getPlayer().setScore(0);
+                EndScreen.this.game.setScreen(ScreenManager.get(GAME_SCREEN));
             }
         });
 
-        dialog.pack();
-        return dialog;
+        this.leaderboard.pack();
+    }
+
+    private void updateLeaderboard() {
+        this.playersTable.clear();
+        this.playersTable.defaults().pad(10);
+        this.playersTable.defaults().prefWidth(150);
+        this.playersTable.defaults().uniform();
+
+        // Adds current player to the top of the list
+        Label currentScore = new Label("Your Score", this.game.skin);
+        this.playersTable.add(currentScore).colspan(2);
+        this.playersTable.row();
+        this.addPlayerToLeaderboard(this.game.getPlayer());
+
+        // Adds a divider between current player and query results
+        Label divider = new Label("Top " + PLAYER_LIMIT + " players", this.game.skin);
+        this.playersTable.add(divider).colspan(2);
+        this.playersTable.row();
+
+        // Queries players and add to playerTable
+        List<Player> players = this.game.playerDao.getTop(PLAYER_LIMIT);
+        players.forEach(this::addPlayerToLeaderboard);
+
+        this.leaderboard.pack();
+    }
+
+    private void addPlayerToLeaderboard(Player player) {
+        Label playerName = new Label("NAME NOT FOUND", this.game.skin);
+        Label playerScore = new Label(String.valueOf(player.getScore()), this.game.skin);
+
+        if (player.getName() != null) playerName.setText(player.getName());
+
+        this.playersTable.add(playerName);
+        this.playersTable.add(playerScore);
+        this.playersTable.row();
     }
 
     @Override
     public void show() {
         // TODO: Start playing some music here
-        // TODO: update the leaderboard each time the game enter this screen
         // Sets the stage as the input processor when this screen becomes the current screen
         Gdx.input.setInputProcessor(this.stage);
+        this.updateLeaderboard();
         this.leaderboard.show(this.stage);
     }
 
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0.4f, 1);
-        // TODO: Draw the top 10 on the leaderboard here
         // No need to update the camera or set projection matrix, stage already does it
         this.viewport.apply(true);
         this.stage.act();
