@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerDao implements IDao<Player>, Disposable {
-    private static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS players (id INTEGER PRIMARY KEY, name TEXT, score INTEGER);";
-    private static final String INSERT_SQL = "INSERT INTO players (name, score) VALUES (?, ?);";
+    private static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS players (id INTEGER PRIMARY KEY, name TEXT UNIQUE, score INTEGER);";
+    private static final String UPSERT_SQL = "INSERT INTO players (name, score) VALUES (?, ?) ON CONFLICT (name) DO UPDATE SET score = excluded.score RETURNING *;";
     private static final String FIND_BY_ID_SQL = "SELECT * FROM players WHERE id = ?;";
     private static final String FIND_BY_NAME_SQL = "SELECT * FROM players WHERE name = ?;";
     private static final String FIND_ALL_SQL = "SELECT * FROM players;";
@@ -25,10 +25,7 @@ public class PlayerDao implements IDao<Player>, Disposable {
 
     public PlayerDao() {
         this.connection = ConnectionHandler.getConnection();
-        this.instantiateTable();
-    }
 
-    public void instantiateTable() {
         try (PreparedStatement statement = this.connection.prepareStatement(CREATE_TABLE_SQL)) {
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -37,39 +34,38 @@ public class PlayerDao implements IDao<Player>, Disposable {
     }
 
     @Override
-    public void insert(Player player) {
-        try (PreparedStatement statement = this.connection.prepareStatement(INSERT_SQL)) {
+    public Player insert(Player player) {
+        // Inserts a new Player if player name isn't on the database, else updates player score, always return modified player
+        Player modifiedPlayer = null;
+
+        try (PreparedStatement statement = this.connection.prepareStatement(UPSERT_SQL)) {
             statement.setString(1, player.getName());
             statement.setInt(2, player.getScore());
-            statement.executeUpdate();
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    modifiedPlayer = PlayerDao.toPlayer(resultSet);
+                }
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
 
-    public void insertOrUpdate(Player player) {
-        Player playerEntity = this.getByName(player.getName());
-        if (playerEntity != null) {
-            player.setId(playerEntity.getId());
-            this.update(player);
-        } else {
-            this.insert(player);
-        }
+        return modifiedPlayer;
     }
 
     @Override
-    public Player get(int id) {
+    public Player get(long id) {
         Player player = null;
 
         try (PreparedStatement statement = this.connection.prepareStatement(FIND_BY_ID_SQL)) {
-            statement.setInt(1, id);
+            statement.setLong(1, id);
 
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                player = this.mapToPlayerObject(resultSet);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    player = PlayerDao.toPlayer(resultSet);
+                }
             }
-
-            resultSet.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -83,12 +79,11 @@ public class PlayerDao implements IDao<Player>, Disposable {
         try (PreparedStatement statement = this.connection.prepareStatement(FIND_BY_NAME_SQL)) {
             statement.setString(1, name);
 
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                player = this.mapToPlayerObject(resultSet);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    player = PlayerDao.toPlayer(resultSet);
+                }
             }
-
-            resultSet.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -101,12 +96,11 @@ public class PlayerDao implements IDao<Player>, Disposable {
         List<Player> players = new ArrayList<>();
 
         try (PreparedStatement statement = this.connection.prepareStatement(FIND_ALL_SQL)) {
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                players.add(this.mapToPlayerObject(resultSet));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    players.add(PlayerDao.toPlayer(resultSet));
+                }
             }
-
-            resultSet.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -120,12 +114,11 @@ public class PlayerDao implements IDao<Player>, Disposable {
         try (PreparedStatement statement = this.connection.prepareStatement(FIND_LIMIT_SQL)) {
             statement.setInt(1, limit);
 
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                players.add(this.mapToPlayerObject(resultSet));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    players.add(PlayerDao.toPlayer(resultSet));
+                }
             }
-
-            resultSet.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -138,8 +131,7 @@ public class PlayerDao implements IDao<Player>, Disposable {
         try (PreparedStatement statement = this.connection.prepareStatement(UPDATE_SQL)) {
             statement.setString(1, player.getName());
             statement.setInt(2, player.getScore());
-            statement.setInt(3, player.getId());
-
+            statement.setLong(3, player.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -149,20 +141,19 @@ public class PlayerDao implements IDao<Player>, Disposable {
     @Override
     public void delete(Player player) {
         try (PreparedStatement statement = this.connection.prepareStatement(DELETE_SQL)) {
-            statement.setInt(1, player.getId());
-
+            statement.setLong(1, player.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Player mapToPlayerObject(ResultSet rs) {
-        try {
-            return new Player(rs.getInt("id"), rs.getString("name"), rs.getInt("score"));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    private static Player toPlayer(ResultSet rs) throws SQLException {
+        Player player = new Player();
+        player.setId(rs.getLong("id"));
+        player.setName(rs.getString("name"));
+        player.setScore(rs.getInt("score"));
+        return player;
     }
 
     @Override

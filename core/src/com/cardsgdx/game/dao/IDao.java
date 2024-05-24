@@ -3,9 +3,9 @@ package com.cardsgdx.game.dao;
 import java.util.List;
 
 public interface IDao<T> {
-    void insert(T t);
+    T insert(T t);
 
-    T get(int id);
+    T get(long id);
 
     List<T> getAll();
 

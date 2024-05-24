@@ -3,6 +3,7 @@ package com.cardsgdx.game.database;
 import java.sql.*;
 
 public class ConnectionHandler {
+    private static final String JDBC_SQLITE_DRIVER = "org.sqlite.JDBC";
     private static final String PLAYERS_DATABASE = "jdbc:sqlite:database//players.db";
 
     private ConnectionHandler() {}
@@ -11,8 +12,9 @@ public class ConnectionHandler {
         Connection connection;
 
         try {
+            Class.forName(JDBC_SQLITE_DRIVER);
             connection = DriverManager.getConnection(PLAYERS_DATABASE);
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             System.err.println(e.getMessage());
             throw new RuntimeException(e);
         }

@@ -46,7 +46,7 @@ public class GameScreen implements Screen {
         ScreenUtils.clear(0, 0, 0.4f, 1);
 
         if (this.cardManager.isAllMatched()) {
-            this.game.playerDao.insertOrUpdate(this.game.player);
+            this.game.playerDao.insert(this.game.player);
             this.game.setScreen(ScreenManager.get(END_SCREEN));
         }
 
