@@ -35,6 +35,16 @@ Desenvolver um jogo de cartas para combinação de pares.
 - O jogo deve exibir uma lista de jogadores que finalizaram em menor tempo
 - A lista deve está ordenada do menor para o maior
 
-### Visão do projeto
+## Visão do projeto
+
+### 02 de abril de 2024
 
 ![Imgur](https://i.imgur.com/HMB5I4g.png)
+
+### 24 de maio de 2024
+
+![Imgur](https://imgur.com/aHJbZdq.png)
+
+![Imgur](https://imgur.com/Z43j2dX.png)
+
+![Imgur](https://imgur.com/CxhVoRY.png)

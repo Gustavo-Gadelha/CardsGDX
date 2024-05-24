@@ -54,7 +54,6 @@ public class CardGame extends Game {
     }
 
     public Player getPlayer() {
-        if (this.player == null) this.player = new Player("DEBUG PLAYER");
         return this.player;
     }
 }

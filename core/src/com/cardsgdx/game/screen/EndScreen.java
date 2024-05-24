@@ -49,7 +49,6 @@ public class EndScreen implements Screen {
         this.createButtons();
 
         // Adding table to stage
-        this.playersTable.debug();
         this.stage.addActor(leaderboard);
     }
 
@@ -89,14 +88,14 @@ public class EndScreen implements Screen {
         this.playersTable.defaults().uniform();
 
         // Adds current player to the top of the list
-        Label currentScore = new Label("Your Score", this.game.skin);
-        this.playersTable.add(currentScore).colspan(2);
+        Label currentScore = new Label("YOUR SCORE", this.game.skin);
+        this.playersTable.add(currentScore);
         this.playersTable.row();
         this.addPlayerToLeaderboard(this.game.getPlayer());
 
         // Adds a divider between current player and query results
-        Label divider = new Label("Top " + PLAYER_LIMIT + " players", this.game.skin);
-        this.playersTable.add(divider).colspan(2);
+        Label divider = new Label("TOP " + PLAYER_LIMIT + " PLAYERS", this.game.skin);
+        this.playersTable.add(divider);
         this.playersTable.row();
 
         // Queries players and add to playerTable
