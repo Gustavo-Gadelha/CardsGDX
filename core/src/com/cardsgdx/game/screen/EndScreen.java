@@ -118,7 +118,6 @@ public class EndScreen implements Screen {
 
     @Override
     public void show() {
-        // TODO: Start playing some music here
         // Sets the stage as the input processor when this screen becomes the current screen
         Gdx.input.setInputProcessor(this.stage);
         this.updateLeaderboard();
@@ -141,12 +140,12 @@ public class EndScreen implements Screen {
 
     @Override
     public void pause() {
-        // TODO: if playing some music here, pause it here
+
     }
 
     @Override
     public void resume() {
-        // TODO: if music if paused, resume it here
+
     }
 
     @Override

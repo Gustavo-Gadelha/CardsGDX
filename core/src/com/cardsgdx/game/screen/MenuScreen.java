@@ -75,7 +75,6 @@ public class MenuScreen implements Screen {
                 } else {
                     MenuScreen.this.playerName = nameInput.getText().trim();
                 }
-                Gdx.app.log("UserInput", MenuScreen.this.playerName); // TODO: Delete this once project is done
             }
         });
 
@@ -114,7 +113,6 @@ public class MenuScreen implements Screen {
 
     @Override
     public void show() {
-        // TODO: Start playing some music here
         // Sets the stage as the input processor when this screen becomes the current screen
         Gdx.input.setInputProcessor(this.stage);
     }
@@ -135,12 +133,12 @@ public class MenuScreen implements Screen {
 
     @Override
     public void pause() {
-        // TODO: if playing some music here, pause it here
+
     }
 
     @Override
     public void resume() {
-        // TODO: if music if paused, resume it here
+
     }
 
     @Override

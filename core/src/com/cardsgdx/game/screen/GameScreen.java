@@ -37,7 +37,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        // TODO: Start playing some music here
+
     }
 
     @Override
@@ -51,7 +51,6 @@ public class GameScreen implements Screen {
             this.touchPoint.set(Gdx.input.getX(), Gdx.input.getY());
             Vector2 mousePos = this.viewport.unproject(this.touchPoint);
             this.cardManager.processMouseInput(this.game.getPlayer(), mousePos.x, mousePos.y);
-            Gdx.app.log("Score", String.valueOf(this.game.getPlayer().getScore())); // TODO: Delete this once project is done
         }
 
         this.game.batch.begin();
@@ -82,12 +81,12 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
-        // TODO: if playing some music here, pause it here
+
     }
 
     @Override
     public void resume() {
-        // TODO: if music if paused, resume it here
+
     }
 
     @Override
