@@ -22,11 +22,14 @@ public class Card {
         this.setSize(WIDTH, HEIGHT); // 128x190
     }
 
-    public Card createMatch() {
-        Card match = new Card(new Sprite(this.front), new Sprite(this.back));
-        match.setMatch(this);
-        this.setMatch(match);
-        return match;
+    public Card(Card card) {
+        this.match = card;
+        this.front = new Sprite(card.front);
+        this.back = new Sprite(card.back);
+        this.isTurned = card.isTurned;
+        this.isMatched = card.isMatched;
+        this.setSize(WIDTH, HEIGHT); // 128x190
+        card.match = this;
     }
 
     public void setSize(float width, float height) {
@@ -39,14 +42,6 @@ public class Card {
         this.back.setPosition(x, y);
     }
 
-    public boolean contains(float x, float y) {
-        if (this.isTurned) {
-            return this.front.getBoundingRectangle().contains(x, y);
-        } else {
-            return this.back.getBoundingRectangle().contains(x, y);
-        }
-    }
-
     public void draw(SpriteBatch batch) {
         if (this.isTurned) {
             this.front.draw(batch);
@@ -55,12 +50,8 @@ public class Card {
         }
     }
 
-    public void setMatch(Card card) {
-        this.match = card;
-    }
-
-    public static boolean match(Card card1, Card card2) {
-        return card1.match == card2 && card2.match == card1;
+    public static boolean match(Card firstCard, Card secondCard) {
+        return firstCard.match == secondCard && secondCard.match == firstCard;
     }
 
     public void turn() {

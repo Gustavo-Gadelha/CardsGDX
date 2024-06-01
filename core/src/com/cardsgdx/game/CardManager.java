@@ -3,6 +3,8 @@ package com.cardsgdx.game;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
@@ -13,32 +15,34 @@ public class CardManager {
     public static final float PADDING = 2f;
     public static final float DELAY = 0.25f;
 
+
     private final Array<Card> playingCards;
     private int numberOfMatches;
     private Card previousCard;
-    private Card currentCard;
     private final Timer timer;
 
     public CardManager(TextureAtlas atlas) {
         this.timer = new Timer();
+        this.numberOfMatches = 0;
 
-        Array<Sprite> frontSprites = new Array<>();
-        Sprite backSprite = atlas.createSprite("cardBack");
+        final Array<Sprite> frontSprites = new Array<>(true, 52, Sprite.class);
+        final Sprite backSprite = atlas.createSprite("cardBack");
 
-        String[] regions = {"Clubs", "Diamonds", "Hearts", "Spades"};
+        final String[] regions = new String[]{"Clubs", "Diamonds", "Hearts", "Spades"};
         for (String region : regions) frontSprites.addAll(atlas.createSprites(region));
         frontSprites.shuffle();
+        frontSprites.shrink();
 
-        this.playingCards = new Array<>(CardManager.ROWS * CardManager.COLS);
+        this.playingCards = new Array<>(true, ROWS * COLS, Card.class);
 
-        int total = (CardManager.ROWS * CardManager.COLS) / 2;
+        final int total = (ROWS * COLS) / 2;
         for (int i = 0; i < total; i++) {
             Card card = new Card(frontSprites.pop(), new Sprite(backSprite));
-            this.playingCards.add(card, card.createMatch());
+            this.playingCards.add(card, new Card(card));
         }
 
         this.playingCards.shuffle();
-        this.numberOfMatches = 0;
+        this.playingCards.shrink();
         this.setCardsPosition();
     }
 
@@ -53,25 +57,25 @@ public class CardManager {
         }
     }
 
-    public void processMouseInput(Player player, float mouseX, float mouseY) {
+    public void processMouseInput(Player player, Vector2 coordinates) {
         // Get the first card at the mouse coordinates and filters it before moving on
-        this.currentCard = this.getCardAt(mouseX, mouseY);
-        if (this.currentCard == null || this.currentCard.isTurned || this.currentCard.isMatched) return;
+        Card currentCard = this.getCardAt(coordinates.x, coordinates.y);
+        if (currentCard == null || currentCard.isTurned || currentCard.isMatched) return;
 
         // if there's no previous card, passes the current one to it and skips the rest
-        this.currentCard.turn();
+        currentCard.turn();
         if (this.previousCard == null) {
-            this.previousCard = this.currentCard;
+            this.previousCard = currentCard;
             return;
         }
 
-        if (Card.match(this.previousCard, this.currentCard)) {
+        if (Card.match(this.previousCard, currentCard)) {
             this.previousCard.isMatched = true;
-            this.currentCard.isMatched = true;
+            currentCard.isMatched = true;
             this.numberOfMatches += 2;
             player.addPoints(80);
         } else {
-            this.turnCards(this.previousCard, this.currentCard);
+            this.turnCards(this.previousCard, currentCard);
             player.deductPoints(10);
         }
 
@@ -79,12 +83,14 @@ public class CardManager {
     }
 
     public Card getCardAt(float mouseX, float mouseY) {
-        // Goes through every card and returns the first one that contains the x and y coordinates within its bounds
-        for (Card card : this.playingCards) {
-            if (card.contains(mouseX, mouseY)) return card;
-        }
+        int cardRow = MathUtils.floor(mouseY / (Card.HEIGHT + CardManager.PADDING));
+        int cardCol = MathUtils.floor(mouseX / (Card.WIDTH + CardManager.PADDING));
 
-        return null;
+        if (CardManager.withinRows(cardRow) && CardManager.withinCols(cardCol)) {
+            return this.playingCards.get(cardRow * CardManager.COLS + cardCol);
+        } else {
+            return null;
+        }
     }
 
     public void turnCards(Card firstCard, Card secondCard) {
@@ -104,5 +110,13 @@ public class CardManager {
 
     public void drawAllCards(SpriteBatch batch) {
         this.playingCards.forEach(card -> card.draw(batch));
+    }
+
+    public static boolean withinRows(int row) {
+        return (row >= 0 && row < CardManager.ROWS);
+    }
+
+    public static boolean withinCols(int col) {
+        return (col >= 0 && col < CardManager.COLS);
     }
 }

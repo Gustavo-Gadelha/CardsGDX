@@ -1,6 +1,7 @@
 package com.cardsgdx.game.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -12,7 +13,10 @@ import com.cardsgdx.game.CardManager;
 
 import static com.cardsgdx.game.screen.ScreenManager.Type.END_SCREEN;
 
-public class GameScreen implements Screen {
+public class GameScreen extends InputAdapter implements Screen {
+    public static final float WORLD_WIDTH = CardManager.COLS * Card.WIDTH + CardManager.PADDING * (CardManager.COLS - 1);
+    public static final float WORLD_HEIGHT = CardManager.ROWS * Card.HEIGHT + CardManager.PADDING * (CardManager.ROWS - 1);
+
     private final CardGame game;
     private final CardManager cardManager;
     private final ExtendViewport viewport;
@@ -26,9 +30,7 @@ public class GameScreen implements Screen {
         this.cardManager = new CardManager(game.atlas);
 
         // Minimum size to garante all Cards are on the screen
-        float worldWidth = CardManager.COLS * Card.WIDTH + CardManager.PADDING * (CardManager.COLS - 1);
-        float worldHeight = CardManager.ROWS * Card.HEIGHT + CardManager.PADDING * (CardManager.ROWS - 1);
-        this.viewport = new ExtendViewport(worldWidth, worldHeight);
+        this.viewport = new ExtendViewport(WORLD_WIDTH, WORLD_HEIGHT);
 
         // Vectors declared once and reassigned as needed to save performance on the garbage collector
         this.touchPoint = new Vector2();
@@ -37,7 +39,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-
+        Gdx.input.setInputProcessor(this);
     }
 
     @Override
@@ -47,20 +49,9 @@ public class GameScreen implements Screen {
         this.viewport.apply(true);
         this.game.batch.setProjectionMatrix(this.viewport.getCamera().combined);
 
-        if (Gdx.input.justTouched()) {
-            this.touchPoint.set(Gdx.input.getX(), Gdx.input.getY());
-            Vector2 mousePos = this.viewport.unproject(this.touchPoint);
-            this.cardManager.processMouseInput(this.game.getPlayer(), mousePos.x, mousePos.y);
-        }
-
         this.game.batch.begin();
         this.cardManager.drawAllCards(this.game.batch);
         this.game.batch.end();
-
-        if (this.cardManager.isAllMatched()) {
-            this.game.playerDao.insert(this.game.getPlayer());
-            this.game.setScreen(ScreenManager.get(END_SCREEN));
-        }
     }
 
     @Override
@@ -97,5 +88,18 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
 
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        this.touchPoint.set(screenX, screenY);
+        this.cardManager.processMouseInput(this.game.getPlayer(), this.viewport.unproject(this.touchPoint));
+
+        if (this.cardManager.isAllMatched()) {
+            this.game.playerDao.insert(this.game.getPlayer());
+            this.game.setScreen(ScreenManager.get(END_SCREEN));
+        }
+
+        return true;
     }
 }
