@@ -32,8 +32,8 @@ Desenvolver um jogo de cartas para combinação de pares.
 
 ### Requisitos
 
-- O jogo deve exibir uma lista de jogadores que finalizaram em menor tempo
-- A lista deve está ordenada do menor para o maior
+- O jogo deve exibir uma lista de jogadores com a maior pontuação
+- A lista deve está ordenada do maior para o menor
 
 ## Visão do projeto
 
