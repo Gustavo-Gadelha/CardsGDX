@@ -1,36 +1,37 @@
 package com.cardsgdx.game.screen;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.utils.Disposable;
 import com.cardsgdx.game.CardGame;
 
 import java.util.HashMap;
 
-public class ScreenManager {
+public class ScreenManager implements Disposable {
 
-    public enum Type {
+    public enum ScreenType {
         MENU_SCREEN, GAME_SCREEN, END_SCREEN
     }
 
-    private static final HashMap <Type, Screen> SCREENS = new HashMap<>(3);
+    private final HashMap<ScreenType, Screen> screens;
 
-    // Private constructor to avoid class be instantiated
-    private ScreenManager() {}
+    public ScreenManager(CardGame game) {
+        this.screens = new HashMap<>(ScreenType.values().length);
 
-    public static void createFrom(CardGame game) {
-        SCREENS.put(Type.MENU_SCREEN, new MenuScreen(game));
-        SCREENS.put(Type.GAME_SCREEN, new GameScreen(game));
-        SCREENS.put(Type.END_SCREEN, new EndScreen(game));
+        this.screens.put(ScreenType.MENU_SCREEN, new MenuScreen(game));
+        this.screens.put(ScreenType.GAME_SCREEN, new GameScreen(game));
+        this.screens.put(ScreenType.END_SCREEN, new EndScreen(game));
     }
 
-    public static void put(Type type, Screen screen) {
-        SCREENS.put(type, screen);
+    public void put(ScreenType screenType, Screen screen) {
+        this.screens.put(screenType, screen);
     }
 
-    public static Screen get(Type type) {
-        return SCREENS.getOrDefault(type, null);
+    public Screen get(ScreenType screenType) {
+        return this.screens.getOrDefault(screenType, null);
     }
 
-    public static void disposeAll() {
-        SCREENS.forEach((type, screen) -> screen.dispose());
+    @Override
+    public void dispose() {
+        this.screens.forEach((type, screen) -> screen.dispose());
     }
 }

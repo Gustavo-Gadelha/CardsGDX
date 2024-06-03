@@ -13,9 +13,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.cardsgdx.game.CardGame;
-import com.cardsgdx.game.screen.ScreenManager.Type;
 import com.cardsgdx.game.ui.AlertDialog;
 import com.cardsgdx.game.ui.ConfirmDialog;
+
+import static com.cardsgdx.game.screen.ScreenManager.ScreenType.GAME_SCREEN;
 
 public class MenuScreen implements Screen {
     private final CardGame game;
@@ -92,7 +93,7 @@ public class MenuScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 if (MenuScreen.this.playerName != null && !MenuScreen.this.playerName.isEmpty()) {
                     MenuScreen.this.game.createPlayer(MenuScreen.this.playerName);
-                    MenuScreen.this.game.setScreen(ScreenManager.get(Type.GAME_SCREEN));
+                    MenuScreen.this.game.setScreen(GAME_SCREEN);
                 } else {
                     MenuScreen.this.alertDialog.show(MenuScreen.this.stage, "Invalid name", "Please enter a non-empty and less than 50 character name");
                 }

@@ -7,14 +7,16 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.cardsgdx.game.dao.PlayerDao;
 import com.cardsgdx.game.screen.ScreenManager;
+import com.cardsgdx.game.screen.ScreenManager.ScreenType;
 
-import static com.cardsgdx.game.screen.ScreenManager.Type.MENU_SCREEN;
+import static com.cardsgdx.game.screen.ScreenManager.ScreenType.MENU_SCREEN;
 
 public class CardGame extends Game {
     public SpriteBatch batch;
     public TextureAtlas atlas;
     public Skin skin;
     public PlayerDao playerDao;
+    public ScreenManager screenManager;
 
     private Player player;
 
@@ -27,8 +29,8 @@ public class CardGame extends Game {
         this.player = new Player();
         this.playerDao = new PlayerDao();
 
-        ScreenManager.createFrom(this);
-        this.setScreen(ScreenManager.get(MENU_SCREEN));
+        this.screenManager = new ScreenManager(this);
+        this.setScreen(MENU_SCREEN);
     }
 
     @Override
@@ -42,7 +44,11 @@ public class CardGame extends Game {
         this.atlas.dispose();
         this.skin.dispose();
         this.playerDao.dispose();
-        ScreenManager.disposeAll();
+        this.screenManager.dispose();
+    }
+
+    public void setScreen(ScreenType screenType) {
+        this.setScreen(this.screenManager.get(screenType));
     }
 
     public void createPlayer(String name) {

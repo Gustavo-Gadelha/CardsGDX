@@ -10,7 +10,7 @@ import com.cardsgdx.game.Card;
 import com.cardsgdx.game.CardGame;
 import com.cardsgdx.game.CardManager;
 
-import static com.cardsgdx.game.screen.ScreenManager.Type.END_SCREEN;
+import static com.cardsgdx.game.screen.ScreenManager.ScreenType.END_SCREEN;
 
 public class GameScreen implements Screen {
     private final CardGame game;
@@ -59,7 +59,7 @@ public class GameScreen implements Screen {
 
         if (this.cardManager.isAllMatched()) {
             this.game.playerDao.insert(this.game.getPlayer());
-            this.game.setScreen(ScreenManager.get(END_SCREEN));
+            this.game.setScreen(END_SCREEN);
         }
     }
 

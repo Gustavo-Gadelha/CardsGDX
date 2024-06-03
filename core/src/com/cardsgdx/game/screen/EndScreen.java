@@ -16,7 +16,7 @@ import com.cardsgdx.game.Player;
 
 import java.util.List;
 
-import static com.cardsgdx.game.screen.ScreenManager.Type.GAME_SCREEN;
+import static com.cardsgdx.game.screen.ScreenManager.ScreenType.GAME_SCREEN;
 
 public class EndScreen implements Screen {
     public static final int PLAYER_LIMIT = 10;
@@ -72,9 +72,9 @@ public class EndScreen implements Screen {
         playAgainButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenManager.put(GAME_SCREEN, new GameScreen(EndScreen.this.game));
+                EndScreen.this.game.screenManager.put(GAME_SCREEN, new GameScreen(EndScreen.this.game));
                 EndScreen.this.game.getPlayer().setScore(0);
-                EndScreen.this.game.setScreen(ScreenManager.get(GAME_SCREEN));
+                EndScreen.this.game.setScreen(GAME_SCREEN);
             }
         });
 
