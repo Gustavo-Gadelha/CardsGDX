@@ -115,4 +115,4 @@ Thumbs.db
 
 ## User
 
-deprecated/
+database/*.db
