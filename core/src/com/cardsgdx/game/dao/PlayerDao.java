@@ -11,14 +11,30 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlayerDao implements IDao<Player>, Disposable {
-    private static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS players (id INTEGER PRIMARY KEY, name TEXT UNIQUE, score INTEGER);";
-    private static final String UPSERT_SQL = "INSERT INTO players (name, score) VALUES (?, ?) ON CONFLICT (name) DO UPDATE SET score = excluded.score RETURNING *;";
-    private static final String FIND_BY_ID_SQL = "SELECT * FROM players WHERE id = ?;";
-    private static final String FIND_ALL_SQL = "SELECT * FROM players;";
-    private static final String FIND_LIMIT_SQL = "SELECT * FROM players ORDER BY score DESC LIMIT ?;";
-    private static final String UPDATE_SQL = "UPDATE players SET name = ?, score = ? WHERE id = ?;";
-    private static final String DELETE_SQL = "DELETE FROM players WHERE id = ?;";
+public class PlayerDao implements IPlayerDao, Disposable {
+    private static final String CREATE_TABLE_SQL =
+            "CREATE TABLE IF NOT EXISTS players (id INTEGER PRIMARY KEY, name TEXT UNIQUE, score INTEGER);";
+
+    private static final String INSERT_SQL =
+            "INSERT INTO players (name, score) VALUES (?, ?) RETURNING *;";
+
+    private static final String FIND_BY_ID_SQL =
+            "SELECT * FROM players WHERE id = ?;";
+
+    private static final String FIND_BY_NAME_SQL =
+            "SELECT * FROM players WHERE name = ?;";
+
+    private static final String FIND_ALL_SQL =
+            "SELECT * FROM players;";
+
+    private static final String FIND_LIMIT_SQL =
+            "SELECT * FROM players ORDER BY score DESC LIMIT ?;";
+
+    private static final String UPDATE_SQL =
+            "UPDATE players SET name = ?, score = ? WHERE id = ?;";
+
+    private static final String DELETE_SQL =
+            "DELETE FROM players WHERE id = ?;";
 
     private final Connection connection;
 
@@ -35,22 +51,22 @@ public class PlayerDao implements IDao<Player>, Disposable {
     @Override
     public Player insert(Player player) {
         // Inserts a new Player if player name isn't on the database, else updates player score, always return modified player
-        Player modifiedPlayer = null;
+        Player insertedPlayer = null;
 
-        try (PreparedStatement statement = this.connection.prepareStatement(UPSERT_SQL)) {
+        try (PreparedStatement statement = this.connection.prepareStatement(INSERT_SQL)) {
             statement.setString(1, player.getName());
             statement.setInt(2, player.getScore());
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    modifiedPlayer = PlayerDao.toPlayer(resultSet);
+                    insertedPlayer = PlayerDao.toPlayer(resultSet);
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
-        return modifiedPlayer;
+        return insertedPlayer;
     }
 
     @Override
@@ -59,6 +75,25 @@ public class PlayerDao implements IDao<Player>, Disposable {
 
         try (PreparedStatement statement = this.connection.prepareStatement(FIND_BY_ID_SQL)) {
             statement.setLong(1, id);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    player = PlayerDao.toPlayer(resultSet);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return player;
+    }
+
+    @Override
+    public Player getByName(String name) {
+        Player player = null;
+
+        try (PreparedStatement statement = this.connection.prepareStatement(FIND_BY_NAME_SQL)) {
+            statement.setString(1, name);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
@@ -90,7 +125,7 @@ public class PlayerDao implements IDao<Player>, Disposable {
     }
 
     public List<Player> getTop(int limit) {
-        List<Player> players = new ArrayList<>(10);
+        List<Player> players = new ArrayList<>(limit);
 
         try (PreparedStatement statement = this.connection.prepareStatement(FIND_LIMIT_SQL)) {
             statement.setInt(1, limit);
@@ -113,6 +148,7 @@ public class PlayerDao implements IDao<Player>, Disposable {
             statement.setString(1, player.getName());
             statement.setInt(2, player.getScore());
             statement.setLong(3, player.getId());
+
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

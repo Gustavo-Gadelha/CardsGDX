@@ -70,8 +70,8 @@ public class MenuScreen implements Screen {
         nameInput.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (nameInput.getText().length() > 50) {
-                    MenuScreen.this.playerName = nameInput.getText().substring(0, 50).trim();
+                if (nameInput.getText().length() > 255) {
+                    MenuScreen.this.playerName = nameInput.getText().substring(0, 255).trim();
                 } else {
                     MenuScreen.this.playerName = nameInput.getText().trim();
                 }
@@ -90,11 +90,13 @@ public class MenuScreen implements Screen {
         startButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (MenuScreen.this.playerName != null && !MenuScreen.this.playerName.isEmpty()) {
+                if (MenuScreen.this.playerName == null || MenuScreen.this.playerName.isEmpty()) {
+                    MenuScreen.this.alertDialog.show(MenuScreen.this.stage, "Invalid name", "Please enter a non-empty and less than 255 character name");
+                } else if (MenuScreen.this.game.playerDao.getByName(MenuScreen.this.playerName) != null) {
+                    MenuScreen.this.alertDialog.show(MenuScreen.this.stage, "Duplicate name", "This name is already registered, please enter another name");
+                } else {
                     MenuScreen.this.game.createPlayer(MenuScreen.this.playerName);
                     MenuScreen.this.game.setScreen(ScreenManager.get(Type.GAME_SCREEN));
-                } else {
-                    MenuScreen.this.alertDialog.show(MenuScreen.this.stage, "Invalid name", "Please enter a non-empty and less than 50 character name");
                 }
             }
         });
